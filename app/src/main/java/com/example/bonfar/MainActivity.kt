@@ -1,30 +1,34 @@
 package com.example.bonfar
 
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
+import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.ar.core.Anchor
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.ar.sceneform.rendering.ModelRenderable
 import io.github.sceneview.SceneView
-import io.github.sceneview.ar.ArSceneView
-import io.github.sceneview.ar.node.ArModelNode
-import io.github.sceneview.material.MaterialLoader
+import io.github.sceneview.collision.HitResult
+import io.github.sceneview.loaders.ModelLoader
 import io.github.sceneview.material.setParameter
 import io.github.sceneview.model.ModelInstance
 import io.github.sceneview.node.ModelNode
-import io.github.sceneview.renderable.Renderable
+import io.github.sceneview.rememberEngine
+import io.github.sceneview.rememberModelLoader
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
-    lateinit var sceneView: ArSceneView
+    lateinit var sceneView: SceneView
     lateinit var placeButton: ExtendedFloatingActionButton
-    lateinit var materialLoader: MaterialLoader
-    private lateinit var modelNode: ModelNode
+    private var modelInstance: ModelInstance? = null
+    private var currentAnchor: Anchor? = null
+    val engine = rememberEngine()
+    val modelLoader = rememberModelLoader(engine)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,37 +41,37 @@ class MainActivity : AppCompatActivity() {
         placeButton = findViewById(R.id.place)
 
         placeButton.setOnClickListener {
-            placeModel()
+            //placeModel()
         }
-        sceneView.renderer?.filamentView?
 
-        modelNode = ArModelNode().apply {
+        val engine = sceneView.engine
 
-            loadModelGlbAsync(
-                glbFileLocation = "models/bf.glb"
-            ) {modelInstance ->
+        modelLoader = ModelLoader
 
+        ModelRenderable.builder()
+            .setSource(this@MainActivity, Uri.parse("file:///android_asset/models/bf.glb"))
+            .build(engine)
+            .thenAccept{modelRenderable ->
+                val modelNode = Node()
                 makeModelEmissive(modelInstance)
+                sceneView.addChildNode(modelNode!!) // Add the ModelNode to the scene
 
-
-                sceneView.planeRenderer.isVisible = true
+                // Update UI after the model is loaded
+                placeButton.isGone = false
             }
-            //delete the place button
-            onAnchorChanged = {
-                placeButton.isGone
+            .exceptionally { throwable ->
+                // Handle errors during model loading
+                throwable.printStackTrace()
+                null
             }
-
         }
-
-        sceneView.addChild(modelNode)
-        /*
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-        */
     }
+
+    private fun loadModel(){
+        val modelUri = Uri.parse("file:///android_asset/models/bf.glb")
+
+    }
+
 
     private fun makeModelEmissive(modelInstance: ModelInstance){
 
@@ -81,8 +85,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /*
     private fun placeModel(){
+        //code to place the model
+        val hitResults = sceneView.frame?.hitTest(sceneView.pointerScreenPosition.x, sceneView.pointerScreenPosition.y)
 
-        sceneView.planeRenderer.isVisible = false
+        // If there is a hit result, use it to create an anchor
+        hitResults?.firstOrNull()?.let { hitResult ->
+            currentAnchor = hitResult.createAnchor() // Create an anchor at the hit location
+            modelNode.anchor = currentAnchor // Set the anchor for the modelNode
+            placeButton.isGone = true // Hide the place button after placing the model
+        }
     }
+    */
 }
