@@ -74,4 +74,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.899" />
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="bonfAR"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:typeface="monospace"
+        tools:layout_editor_absoluteX="27dp"
+        tools:layout_editor_absoluteY="684dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

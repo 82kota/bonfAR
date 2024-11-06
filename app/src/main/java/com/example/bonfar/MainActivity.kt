@@ -1,5 +1,6 @@
 package com.example.bonfar
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
@@ -19,6 +20,7 @@ import io.github.sceneview.model.ModelInstance
 import io.github.sceneview.node.ModelNode
 import io.github.sceneview.renderable.Renderable
 
+
 class MainActivity : AppCompatActivity() {
 
     lateinit var sceneView: ArSceneView
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var blueButton: ExtendedFloatingActionButton
     lateinit var materialLoader: MaterialLoader
     private lateinit var modelNode: ModelNode
+    private lateinit var sound: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +48,12 @@ class MainActivity : AppCompatActivity() {
         placeButton.setOnClickListener {
             placeModel()
         }
+
+        //firework sound player
+        sound = MediaPlayer.create(applicationContext, R.raw.fireworks_mixdown5)
+
+        sound.start()
+        sound.setLooping(true)
 
         modelNode = ArModelNode().apply {
 
@@ -77,7 +86,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         sceneView.addChild(modelNode)
-
 
         /*
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
