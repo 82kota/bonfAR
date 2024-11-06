@@ -23,6 +23,9 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var sceneView: ArSceneView
     lateinit var placeButton: ExtendedFloatingActionButton
+    lateinit var redButton: ExtendedFloatingActionButton
+    lateinit var greenButton: ExtendedFloatingActionButton
+    lateinit var blueButton: ExtendedFloatingActionButton
     lateinit var materialLoader: MaterialLoader
     private lateinit var modelNode: ModelNode
 
@@ -35,11 +38,13 @@ class MainActivity : AppCompatActivity() {
         sceneView = findViewById(R.id.sceneView)
 
         placeButton = findViewById(R.id.place)
+        redButton = findViewById(R.id.redButton)
+        greenButton = findViewById(R.id.greenButton)
+        blueButton = findViewById(R.id.blueButton)
 
         placeButton.setOnClickListener {
             placeModel()
         }
-        sceneView.renderer?.filamentView?
 
         modelNode = ArModelNode().apply {
 
@@ -49,6 +54,18 @@ class MainActivity : AppCompatActivity() {
 
                 makeModelEmissive(modelInstance)
 
+                placeButton.setOnClickListener {
+                    colourChangeYellow(modelInstance)
+                }
+                redButton.setOnClickListener {
+                    colourChangeRed(modelInstance)
+                }
+                greenButton.setOnClickListener {
+                    colourChangeGreen(modelInstance)
+                }
+                blueButton.setOnClickListener {
+                    colourChangeBlue(modelInstance)
+                }
 
                 sceneView.planeRenderer.isVisible = true
             }
@@ -60,6 +77,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         sceneView.addChild(modelNode)
+
+
         /*
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -68,6 +87,7 @@ class MainActivity : AppCompatActivity() {
         }
         */
     }
+
 
     private fun makeModelEmissive(modelInstance: ModelInstance){
 
@@ -79,6 +99,43 @@ class MainActivity : AppCompatActivity() {
             )  // White emissive color
             materialInstance.setParameter("emissiveStrength", 1.0f)  // Adjust intensity as needed
         }
+    }
+
+    private fun colourChangeRed(modelInstance: ModelInstance){
+            modelInstance.materialInstances.forEach { materialInstance ->
+                materialInstance.setParameter(
+                    "emissiveFactor",
+                    1.0f, 0.0f, 0.0f, 1.0f
+                )  // red emissive color
+                materialInstance.setParameter("emissiveStrength", 1.0f)  // Adjust intensity as needed
+            }
+    }
+    private fun colourChangeGreen(modelInstance: ModelInstance){
+            modelInstance.materialInstances.forEach { materialInstance ->
+                materialInstance.setParameter(
+                    "emissiveFactor",
+                    0.0f, 1.0f, 0.0f, 1.0f
+                )  // green emissive color
+                materialInstance.setParameter("emissiveStrength", 1.0f)  // Adjust intensity as needed
+            }
+    }
+    private fun colourChangeBlue(modelInstance: ModelInstance){
+            modelInstance.materialInstances.forEach { materialInstance ->
+                materialInstance.setParameter(
+                    "emissiveFactor",
+                    0.0f, 0.0f, 1.0f, 1.0f
+                )  // blue emissive color
+                materialInstance.setParameter("emissiveStrength", 1.0f)  // Adjust intensity as needed
+            }
+    }
+    private fun colourChangeYellow(modelInstance: ModelInstance){
+            modelInstance.materialInstances.forEach { materialInstance ->
+                materialInstance.setParameter(
+                    "emissiveFactor",
+                    1.0f, 1.0f, 0.0f, 1.0f
+                )  // yellow emissive color
+                materialInstance.setParameter("emissiveStrength", 1.0f)  // Adjust intensity as needed
+            }
     }
 
     private fun placeModel(){
